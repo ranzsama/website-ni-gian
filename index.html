@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Little Date 💜</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #f3e8ff, #c084fc, #9333ea);
+  color: #602080;
+  overflow-x: hidden;
+}
+
+.card {
+  background: white;
+  width: 100%;
+  max-width: 430px;
+  padding: 28px 22px;
+  border-radius: 26px;
+  text-align: center;
+  box-shadow: 0 12px 40px #5b168333;
+  position: relative;
+  z-index: 1;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.emoji { font-size: 60px; }
+
+h1 {
+  font-size: 27px;
+  color: #9333ea;
+}
+
+p { line-height: 1.8; white-space: pre-line; }
+
+button {
+  border: 0;
+  border-radius: 13px;
+  padding: 13px 20px;
+  margin: 8px 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary, #yesBtn {
+  background: #a855f7;
+  color: white;
+}
+
+.secondary, #noBtn {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 15px 0;
+  border: 2px solid #d8b4fe;
+  border-radius: 12px;
+  font: inherit;
+}
+
+.choices {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 100px;
+  margin-top: 20px;
+}
+
+#yesBtn {
+  transform-origin: center;
+  transition: transform .25s;
+}
+
+#noBtn { transition: transform .25s; }
+
+.summary {
+  padding: 15px;
+  background: #faf5ff;
+  border-radius: 15px;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  font-size: 12px;
+  color: #a078b5;
+}
+
+.message-box {
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 18px;
+  padding: 18px;
+  margin: 18px 0;
+  text-align: left;
+  color: #602080;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+.heart {
+  position: fixed;
+  top: -40px;
+  z-index: 0;
+  pointer-events: none;
+  animation: fall 5s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MUSIC: Put song.mp3 in the same folder as this file -->
+<audio id="bgMusic" loop>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+
+  <!-- SCREEN 1: WELCOME -->
+  <section id="welcome" class="screen active">
+    <div class="emoji">💌</div>
+    <h1>Hey, you! 💜</h1>
+    <p>I made a little surprise just for you. 🥹</p>
+    <button class="primary" onclick="openSurprise()">
+      Open your surprise ✨
+    </button>
+    <p class="note" id="musicStatus">🎵 A little song is waiting...</p>
+  </section>
+
+  <!-- SCREEN 2: INVITATION -->
+  <section id="question" class="screen">
+    <div class="emoji">🏸💜</div>
+    <h1>Will you go on a badminton date with me?</h1>
+
+    <!-- ✏️ EDIT YOUR INVITATION MESSAGE HERE -->
+    <p id="loveMessage">I've been wanting to ask you something...
+Would you spend a little time with me
+and play badminton together? 🥹💜</p>
+
+    <div class="choices">
+      <button id="yesBtn" onclick="goToDate()">YES! 💜</button>
+      <button id="noBtn" onclick="growYes()">NO 🙈</button>
+    </div>
+    <p class="note" id="hint">Choose wisely hehe 💗</p>
+  </section>
+
+  <!-- SCREEN 3: CHOOSE DATE -->
+  <section id="dateScreen" class="screen">
+    <div class="emoji">📅💜</div>
+    <h1>Pick our date!</h1>
+    <p>Which day works for you? 🌷</p>
+
+    <input type="date" id="dateInput">
+
+    <button class="primary" onclick="goToTime()">Next ➜</button>
+    <br>
+    <button class="secondary" onclick="showScreen('question')">
+      Go back
+    </button>
+  </section>
+
+  <!-- SCREEN 4: CHOOSE TIME -->
+  <section id="timeScreen" class="screen">
+    <div class="emoji">🕒💗</div>
+    <h1>Choose our time!</h1>
+    <p>What time works best for you? 🥹</p>
+
+    <input type="time" id="timeInput">
+
+    <button class="primary" onclick="confirmDate()">
+      Confirm our date 💜
+    </button>
+    <br>
+    <button class="secondary" onclick="showScreen('dateScreen')">
+      Go back
+    </button>
+  </section>
+
+  <!-- SCREEN 5: DATE CONFIRMATION -->
+  <section id="confirmation" class="screen">
+    <div class="emoji">🏸💜</div>
+    <h1>IT'S A DATE! 🎉</h1>
+    <p>Yay! I'm looking forward to spending time with you! 🥹</p>
+
+    <div class="summary">
+      <strong>Our little plan ✨</strong><br>
+      📅 <span id="chosenDate"></span><br>
+      🕒 <span id="chosenTime"></span><br>
+      🏸 Badminton date!
+    </div>
+
+    <p>There's one more thing I want to tell you... 💌</p>
+
+    <!-- BUTTON TO OPEN THE NEW MESSAGE PAGE -->
+    <button class="primary" onclick="showScreen('messageScreen')">
+      Read my message 💌
+    </button>
+    <br>
+    <button class="secondary" onclick="showScreen('question')">
+      Start again
+    </button>
+  </section>
+
+  <!-- SCREEN 6: PERSONAL MESSAGE PAGE -->
+  <section id="messageScreen" class="screen">
+    <div class="emoji">💌💜</div>
+    <h1>A Little Message for You</h1>
+    <p>Something from my heart... 🥹🌷</p>
+
+    <div class="message-box">
+
+      <!-- ✏️ CHANGE YOUR PERSONAL MESSAGE HERE -->
+      <p id="personalMessage">hiii, love! 💗
+
+i was wondering if you’d let me steal a little bit 
+of your time for a badminton date with me?🏸🎀
+
+we could play, laugh at our misses, tease each other 
+a little, and just enjoy being together.
+
+ honestly, i don’t really mind if i win or lose, 
+as long as i get to spend time with you. Sigi na plsss HAHAHHAHA</p>
+
+    </div>
+
+    <div class="emoji">🧸🌷💗</div>
+
+    <button class="primary" onclick="showScreen('confirmation')">
+      Back to our date 🏸
+    </button>
+  </section>
+
+</div>
+
+<script>
+const music = document.getElementById("bgMusic");
+let yesScale = 1;
+let noCount = 0;
+
+// OPEN INVITATION AND TRY TO PLAY MUSIC
+function openSurprise() {
+  showScreen("question");
+
+  music.volume = 0.5;
+
+  music.play().then(() => {
+    document.getElementById("musicStatus").textContent =
+      "🎵 Music is playing 💜";
+  }).catch(() => {
+    document.getElementById("musicStatus").textContent =
+      "🎵 Check your song.mp3 file if music doesn't play.";
+  });
+}
+
+// CHANGE PAGES
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(function(screen) {
+    screen.classList.remove("active");
+  });
+
+  const target = document.getElementById(id);
+
+  if (target) {
+    target.classList.add("active");
+  }
+}
+
+// NO MAKES YES BIGGER
+function growYes() {
+  noCount++;
+  yesScale = Math.min(yesScale + 0.3, 3.2);
+
+  document.getElementById("yesBtn").style.transform =
+    "scale(" + yesScale + ")";
+
+  document.getElementById("noBtn").style.transform =
+    "scale(" + Math.max(1 - noCount * 0.08, 0.55) + ")";
+
+  const hints = [
+    "Are you sure? 🥹",
+    "Please reconsider hehe 💜",
+    "The YES button is getting bigger! 😭",
+    "Pretty please? 🌷",
+    "One YES would make me smile! 💗"
+  ];
+
+  document.getElementById("hint").textContent =
+    hints[Math.min(noCount - 1, hints.length - 1)];
+}
+
+// YES -> DATE PAGE
+function goToDate() {
+  showScreen("dateScreen");
+}
+
+// DATE -> TIME PAGE
+function goToTime() {
+  const dateValue = document.getElementById("dateInput").value;
+
+  if (!dateValue) {
+    alert("Please choose a date first! 📅💜");
+    return;
+  }
+
+  showScreen("timeScreen");
+}
+
+// TIME -> CONFIRMATION PAGE
+function confirmDate() {
+  const dateValue = document.getElementById("dateInput").value;
+  const timeValue = document.getElementById("timeInput").value;
+
+  if (!dateValue) {
+    showScreen("dateScreen");
+    alert("Please choose a date first! 📅💜");
+    return;
+  }
+
+  if (!timeValue) {
+    alert("Please choose a time first! 🕒💜");
+    return;
+  }
+
+  const parts = dateValue.split("-").map(Number);
+  const date = new Date(parts[0], parts[1] - 1, parts[2]);
+
+  document.getElementById("chosenDate").textContent =
+    date.toLocaleDateString("en-PH", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+  const timeParts = timeValue.split(":").map(Number);
+  const time = new Date();
+  time.setHours(timeParts[0], timeParts[1], 0, 0);
+
+  document.getElementById("chosenTime").textContent =
+    time.toLocaleTimeString("en-PH", {
+      hour: "numeric",
+      minute: "2-digit"
+    });
+
+  showScreen("confirmation");
+  makeHearts();
+}
+
+// FLOATING HEARTS
+function makeHearts() {
+  const symbols = ["💜", "💗", "💕", "✨", "🌷"];
+
+  for (let i = 0; i < 22; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent =
+      symbols[Math.floor(Math.random() * symbols.length)];
+
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (3 + Math.random() * 4) + "s";
+    heart.style.fontSize = (16 + Math.random() * 20) + "px";
+
+    document.body.appendChild(heart);
+
+    setTimeout(function() {
+      heart.remove();
+    }, 7500);
+  }
+}
+</script>
+
+</body>
+</html>
